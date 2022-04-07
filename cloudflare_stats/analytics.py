@@ -241,6 +241,8 @@ def cli(
         del zone_info["permissions"]
         zone = CloudflareZone.parse_obj(zone_info)
 
+        logger.info(zone.domain)
+
         payload={
             "sourcetype" : "cloudflare:zone",
             "event" : zone.dict()

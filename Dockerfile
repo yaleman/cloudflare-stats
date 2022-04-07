@@ -17,4 +17,4 @@ RUN python -m pip install .
 # EXPOSE 5000
 
 #Run the command
-CMD ["cloudflare-analytics", "--debug"]
+ENTRYPOINT [ "cloudflare-analytics"]
