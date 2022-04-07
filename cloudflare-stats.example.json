@@ -1,0 +1,8 @@
+{
+    "cloudflare_auth_email" : "cloudflareemail@example.com",
+    "cloudflare_auth_token" : "Supersecret",
+    "splunk_hostname" : "splunk.example.com",
+    "splunk_token" : "supersecrethectoken",
+    "splunk_hec_port" : 8088,
+    "splunk_index" : "test"
+}

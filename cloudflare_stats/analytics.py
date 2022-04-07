@@ -4,7 +4,6 @@
 from datetime import datetime, timedelta
 import json
 import logging
-from pathlib import Path
 import sys
 from typing import Any, Dict, Generator, List, Optional, Union
 
@@ -13,122 +12,37 @@ from loguru import logger
 import requests
 from splunk_http_event_collector import http_event_collector #type:ignore
 
-from . import k2v, setup_logging
+from . import k2v, setup_logging, auth_headers, load_config
+from .constants import DAYS_HENCE, DATE_FORMAT, DATETINE_FORMAT, HOURS_HENCE, QUERY_STRING
 from .custom_types import ConfigFile, CloudflareZone
 from .custom_types.analytics import AnalyticsDayData
 
-DAYS_HENCE = 90
-HOURS_HENCE = 36
 
-DATE_FORMAT = "%Y-%m-%d"
-DATETINE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
-
-QUERY_STRING = """query GetZoneAnalytics($zoneTag: string, $since: string, $until: string) {
-    viewer {
-        zones(filter: {zoneTag: $zoneTag}) {
-        totals: httpRequests1dGroups(limit: 10000, filter: {date_geq: $since, date_lt: $until}) {
-            uniq {
-            uniques
-            __typename
-            }
-            __typename
-        }
-        zones: httpRequests1dGroups(orderBy: [date_ASC], limit: 10000, filter: {date_geq: $since, date_lt: $until}) {
-            dimensions {
-            timeslot: date
-            __typename
-            }
-            uniq {
-            uniques
-            __typename
-            }
-            sum {
-            browserMap {
-                pageViews
-                key: uaBrowserFamily
-                __typename
-            }
-            bytes
-            cachedBytes
-            cachedRequests
-            contentTypeMap {
-                bytes
-                requests
-                key: edgeResponseContentTypeName
-                __typename
-            }
-            clientSSLMap {
-                requests
-                key: clientSSLProtocol
-                __typename
-            }
-            countryMap {
-                bytes
-                requests
-                threats
-                key: clientCountryName
-                __typename
-            }
-            encryptedBytes
-            encryptedRequests
-            ipClassMap {
-                requests
-                key: ipType
-                __typename
-            }
-            pageViews
-            requests
-            responseStatusMap {
-                requests
-                key: edgeResponseStatus
-                __typename
-            }
-            threats
-            threatPathingMap {
-                requests
-                key: threatPathingName
-                __typename
-            }
-            __typename
-            }
-            __typename
-        }
-        __typename
-        }
-        __typename
-    }
-    }"""
-
-
-def auth_headers(config_file: ConfigFile) -> Dict[str,str]:
-    """ get the auth headers """
-    return {
-        "X-AUTH-EMAIL" : config_file.auth_email,
-        "Authorization" : f"Bearer {config_file.auth_token}"
-    }
-
+# pylint: disable=too-many-arguments
 def get_analytics(
     zone_id: str,
     config_file: ConfigFile,
     earliest: Optional[str] = None,
     latest: Optional[str] = None,
-    query_type: str="days"
+    query_type: str="days",
+    time_count: Optional[int] = None
     ) -> List[Dict[str, Any]]:
     """ analytics query """
 
-
-
-
     if query_type == "days":
+        if time_count is None:
+            time_count=DAYS_HENCE
         if earliest is None:
-            earliest_date = datetime.utcnow() - timedelta(days=DAYS_HENCE)
+            earliest_date = datetime.utcnow() - timedelta(days=time_count)
             earliest = earliest_date.strftime(DATE_FORMAT)
         if latest is None:
             latest=datetime.utcnow().strftime(DATE_FORMAT)
         querystring = str(QUERY_STRING)
     elif query_type == "hours":
+        if time_count is None:
+            time_count=HOURS_HENCE
         if earliest is None:
-            earliest_date = datetime.utcnow() - timedelta(hours=HOURS_HENCE)
+            earliest_date = datetime.utcnow() - timedelta(hours=time_count)
             earliest = earliest_date.strftime(DATETINE_FORMAT)
         if latest is None:
             latest=datetime.utcnow().strftime(DATETINE_FORMAT)
@@ -208,19 +122,12 @@ def get_zones(
             ):
                 yield result
 
-
-def load_config() -> ConfigFile:
-    """ loads config """
-    config_filepath = Path("~/.config/cloudflare-stats.json").expanduser().resolve()
-    if not config_filepath.exists():
-        logger.error("Couldn't find config file, looked in {}", config_filepath)
-        sys.exit(1)
-    return ConfigFile.parse_file(config_filepath)
-
-
 @click.command()
 @click.option("--debug", "-d", is_flag=True, default=False)
+@click.option("--time-count", "-c", help="number of intervals (days/hours) to go back")
 def cli(
+    time_count: Optional[int]=None,
+
     debug: bool=False,
     ) -> None:
     """ Analytics downloader for Cloudflare data """
@@ -229,9 +136,9 @@ def cli(
     setup_logging(debug)
 
     hec = http_event_collector(
-        token=config.hec_token,
-        http_event_server=config.hec_hostname,
-        http_event_port=config.hec_port,
+        token=config.splunk_token,
+        http_event_server=config.splunk_hostname,
+        http_event_port=config.splunk_hec_port,
         http_event_server_ssl=True,
         )
     hec.index = config.splunk_index
@@ -253,6 +160,7 @@ def cli(
                     zone_id=zone.id,
                     config_file=config,
                     query_type="hours",
+                    time_count=time_count,
                     )
 
         for data_raw in zone_analytics:

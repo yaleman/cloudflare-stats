@@ -10,7 +10,17 @@ Install this library using `pip`:
 
 ## Usage
 
-Uh... maybe later.
+Configuration:
+
+Copy `cloudflare-stats.example.json` to `cloudflare-stats.json` and put in your details.
+
+Running this in docker:
+
+```shell
+docker run --rm -it \
+    -v "$HOME/.config/cloudflare-stats.json:/etc/cloudflare-stats.json" \
+    ghcr.io/yaleman/cloudflare-stats:latest
+```
 
 ## Development
 

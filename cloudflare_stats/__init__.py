@@ -1,10 +1,34 @@
 """ cloudflare stats things """
 
 import json
+from pathlib import Path
+
 import sys
 from typing import Any, Dict, List, Optional
 
 from loguru import logger
+from .custom_types import ConfigFile
+
+def auth_headers(config_file: ConfigFile) -> Dict[str,str]:
+    """ get the auth headers """
+    return {
+        "X-AUTH-EMAIL" : config_file.cloudflare_auth_email,
+        "Authorization" : f"Bearer {config_file.cloudflare_auth_token}"
+    }
+
+
+def load_config() -> ConfigFile:
+    """ loads config """
+    for test_path in [
+        "cloudflare-stats.json",
+        "/etc/cloudflare-stats.json",
+        "~/.config/cloudflare-stats.json",
+        ]:
+        config_filepath = Path(test_path).expanduser().resolve()
+        if config_filepath.exists():
+            return ConfigFile.parse_file(config_filepath)
+    raise FileNotFoundError("Couldn't find a config file!")
+
 
 def k2v(
     data: List[Dict[str, Any]],

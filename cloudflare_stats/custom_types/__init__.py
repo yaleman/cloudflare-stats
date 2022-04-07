@@ -7,11 +7,11 @@ from pydantic import BaseModel, Field
 
 class ConfigFile(BaseModel):
     """ config file def """
-    auth_email: str
-    auth_token: str
-    hec_hostname: str
-    hec_token: str
-    hec_port: int = 8088
+    cloudflare_auth_email: str
+    cloudflare_auth_token: str
+    splunk_hostname: str
+    splunk_token: str
+    splunk_hec_port: int = 8088
     splunk_index: str = "cloudflare"
 
 
