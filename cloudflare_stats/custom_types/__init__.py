@@ -13,6 +13,7 @@ class ConfigFile(BaseModel):
     splunk_token: str
     splunk_hec_port: int = 8088
     splunk_index: str = "cloudflare"
+    time_type: Optional[str]
 
 
 class CloudflareZoneMeta(BaseModel):

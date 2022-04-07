@@ -124,16 +124,30 @@ def get_zones(
 
 @click.command()
 @click.option("--debug", "-d", is_flag=True, default=False)
+@click.option(
+    "--time-type", "-t",
+    help="Either 'days' or 'hours', defaults to 'days'",
+    )
 @click.option("--time-count", "-c", help="number of intervals (days/hours) to go back")
 def cli(
     time_count: Optional[int]=None,
-
+    time_type: Optional[str]=None,
     debug: bool=False,
     ) -> None:
     """ Analytics downloader for Cloudflare data """
     config = load_config()
-
     setup_logging(debug)
+
+    if time_type is None:
+        if config.time_type is not None:
+            time_type = config.time_type
+        else:
+            time_type = "days"
+
+
+    if time_type not in ["days", "hours",]:
+        logger.error("time-type setting needs to be either days or hours, got '{}'", time_type)
+        sys.exit(1)
 
     hec = http_event_collector(
         token=config.splunk_token,
@@ -159,7 +173,7 @@ def cli(
         zone_analytics = get_analytics(
                     zone_id=zone.id,
                     config_file=config,
-                    query_type="hours",
+                    query_type=time_type,
                     time_count=time_count,
                     )
 
