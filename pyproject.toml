@@ -2,7 +2,9 @@
 name = "cloudflare_stats"
 version = "0.0.1"
 description = ""
-authors = ["James Hogkinson <james@terminaloutcomes.com>"]
+authors = [
+    "James Hogkinson <james@terminaloutcomes.com>",
+]
 license = "MIT"
 
 [tool.poetry.dependencies]
@@ -12,24 +14,32 @@ pydantic = "^1.9.0"
 loguru = "^0.6.0"
 click = "^8.1.2"
 
-
 [tool.poetry.dependencies.splunk-hec]
 url = "https://github.com/georgestarcher/Splunk-Class-httpevent/archive/refs/heads/master.tar.gz"
-
 
 [tool.poetry.dev-dependencies]
 pylint-pydantic = "^0.1.4"
 
-[build-system]
-requires = ["poetry-core>=1.0.0"]
-build-backend = "poetry.core.masonry.api"
-
-[tool.pylint.MASTER]
-max-line-length=200
-disable="W0511"
-# https://github.com/samuelcolvin/pydantic/issues/1961#issuecomment-759522422
-extension-pkg-whitelist="pydantic"
-load-plugins="pylint_pydantic"
-
 [tool.poetry.scripts]
 cloudflare-analytics = "cloudflare_stats.analytics:cli"
+
+[tool.pylint.MASTER]
+max-line-length = 200
+disable = "W0511"
+extension-pkg-whitelist = "pydantic"
+load-plugins = "pylint_pydantic"
+
+[build-system]
+requires = [
+    "poetry-core>=1.0.0",
+]
+build-backend = "poetry.core.masonry.api"
+
+[project]
+name = "cloudflare_stats"
+description = ""
+license = "MIT"
+version = "0.0.1"
+authors = [
+    { name = "James Hogkinson", email = "james@terminaloutcomes.com" },
+]
