@@ -14,24 +14,19 @@ QUERY_STRING = """query GetZoneAnalytics($zoneTag: string, $since: string, $unti
         totals: httpRequests1dGroups(limit: 10000, filter: {date_geq: $since, date_lt: $until}) {
             uniq {
             uniques
-            __typename
             }
-            __typename
         }
         zones: httpRequests1dGroups(orderBy: [date_ASC], limit: 10000, filter: {date_geq: $since, date_lt: $until}) {
             dimensions {
             timeslot: date
-            __typename
             }
             uniq {
             uniques
-            __typename
             }
             sum {
             browserMap {
                 pageViews
                 key: uaBrowserFamily
-                __typename
             }
             bytes
             cachedBytes
@@ -40,46 +35,36 @@ QUERY_STRING = """query GetZoneAnalytics($zoneTag: string, $since: string, $unti
                 bytes
                 requests
                 key: edgeResponseContentTypeName
-                __typename
             }
             clientSSLMap {
                 requests
                 key: clientSSLProtocol
-                __typename
             }
             countryMap {
                 bytes
                 requests
                 threats
                 key: clientCountryName
-                __typename
             }
             encryptedBytes
             encryptedRequests
             ipClassMap {
                 requests
                 key: ipType
-                __typename
             }
             pageViews
             requests
             responseStatusMap {
                 requests
                 key: edgeResponseStatus
-                __typename
             }
             threats
             threatPathingMap {
                 requests
                 key: threatPathingName
-                __typename
             }
-            __typename
             }
-            __typename
         }
-        __typename
         }
-        __typename
     }
     }"""

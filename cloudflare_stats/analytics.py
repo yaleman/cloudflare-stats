@@ -158,6 +158,7 @@ def cli(
         http_event_port=config.splunk_hec_port,
         http_event_server_ssl=True,
         )
+    hec.input_type = "json"
     hec.index = config.splunk_index
     hec.log.setLevel(logging.DEBUG)
 
@@ -196,22 +197,38 @@ def cli(
             data_raw["responseStatusMap"] = k2v(data_raw["responseStatusMap"])
             data_raw["threatPathingMap"] = k2v(data_raw["threatPathingMap"])
 
-            data_raw["timeslot"] = data_raw["dimensions"]["timeslot"]
+            if time_type == "days":
+                data_raw["timeslot"] = f"{data_raw['dimensions']['timeslot']}T00:00:00Z"
+            else:
+                data_raw["timeslot"] = data_raw["dimensions"]["timeslot"]
+            eventtime = datetime.strptime(
+                data_raw["timeslot"],
+                "%Y-%m-%dT%H:%M:%S%z"
+            )
 
+            # clean out re-mapped fields
             del data_raw["dimensions"]
             del data_raw["sum"]
 
             timeslot_data = AnalyticsDayData.parse_obj(data_raw)
-            logger.debug("Successfully parsed {} {}", zone.domain, timeslot_data.timeslot)
+            logger.debug(
+                "Successfully parsed {} {}",
+                zone.domain,
+                timeslot_data.dict()["timeslot"],
+                )
             timeslot_data.zone_id = zone.id
             timeslot_data.domain = zone.domain
-            logger.debug(json.dumps(timeslot_data.dict(), indent=4, default=str))
             payload = {
                 "sourcetype" : "cloudflare:analytics",
                 "event" : timeslot_data.dict(exclude_none=True, exclude_unset=True),
             }
-            hec.batchEvent(payload)
-        hec.flushBatch()
+            logger.debug(json.dumps(payload, indent=4, default=str))
+
+            hec.batchEvent(
+                payload,
+                eventtime=eventtime.timestamp(),
+                )
+            hec.flushBatch()
 
     hec.flushBatch()
 
