@@ -25,8 +25,10 @@ def load_config() -> ConfigFile:
         "/etc/cloudflare-stats.json",
         "~/.config/cloudflare-stats.json",
         ]:
+        logger.debug("Checking {}", test_path)
         config_filepath = Path(test_path).expanduser().resolve()
         if config_filepath.exists():
+            logger.debug("Parsing {}", config_filepath)
             return ConfigFile.parse_file(config_filepath)
     raise FileNotFoundError("Couldn't find a config file!")
 

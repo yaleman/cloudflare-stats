@@ -136,8 +136,9 @@ def cli(
     ) -> None:
     """ Analytics downloader for Cloudflare data """
     setup_logging(debug)
-    logger.debug("Loading config")
     config = load_config()
+
+    logger.debug(config.dict())
 
     if time_type is None:
         if config.time_type is not None:
