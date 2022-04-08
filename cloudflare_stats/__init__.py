@@ -30,7 +30,8 @@ def load_config() -> ConfigFile:
         if config_filepath.exists():
             logger.debug("Parsing {}", config_filepath)
             return ConfigFile.parse_file(config_filepath)
-    raise FileNotFoundError("Couldn't find a config file!")
+    logger.error("Couldn't find a config file!")
+    sys.exit(1)
 
 def k2v(
     data: List[Dict[str, Any]],

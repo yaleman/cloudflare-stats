@@ -151,6 +151,7 @@ def cli(
         logger.error("time-type setting needs to be either days or hours, got '{}'", time_type)
         sys.exit(1)
 
+    logger.debug("Starting HEC")
     hec = http_event_collector(
         token=config.splunk_token,
         http_event_server=config.splunk_hostname,
@@ -160,8 +161,10 @@ def cli(
     hec.index = config.splunk_index
     hec.log.setLevel(logging.DEBUG)
 
+    logger.debug("Pulling list of zones...")
     for zone_info in get_zones(config):
         del zone_info["permissions"]
+        logger.debug("Parsing zone")
         zone = CloudflareZone.parse_obj(zone_info)
 
         logger.info(zone.domain)
