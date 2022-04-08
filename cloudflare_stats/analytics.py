@@ -33,7 +33,7 @@ def get_analytics(
         if time_count is None:
             time_count=DAYS_HENCE
         if earliest is None:
-            earliest_date = datetime.utcnow() - timedelta(days=time_count)
+            earliest_date = datetime.utcnow() - timedelta(days=int(time_count))
             earliest = earliest_date.strftime(DATE_FORMAT)
         if latest is None:
             latest=datetime.utcnow().strftime(DATE_FORMAT)
@@ -42,7 +42,7 @@ def get_analytics(
         if time_count is None:
             time_count=HOURS_HENCE
         if earliest is None:
-            earliest_date = datetime.utcnow() - timedelta(hours=time_count)
+            earliest_date = datetime.utcnow() - timedelta(hours=int(time_count))
             earliest = earliest_date.strftime(DATETINE_FORMAT)
         if latest is None:
             latest=datetime.utcnow().strftime(DATETINE_FORMAT)
@@ -135,8 +135,9 @@ def cli(
     debug: bool=False,
     ) -> None:
     """ Analytics downloader for Cloudflare data """
-    config = load_config()
     setup_logging(debug)
+    logger.debug("Loading config")
+    config = load_config()
 
     if time_type is None:
         if config.time_type is not None:

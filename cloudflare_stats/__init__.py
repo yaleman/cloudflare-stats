@@ -16,9 +16,10 @@ def auth_headers(config_file: ConfigFile) -> Dict[str,str]:
         "Authorization" : f"Bearer {config_file.cloudflare_auth_token}"
     }
 
-
 def load_config() -> ConfigFile:
     """ loads config """
+
+    logger.debug("Loading config")
     for test_path in [
         "cloudflare-stats.json",
         "/etc/cloudflare-stats.json",
@@ -28,7 +29,6 @@ def load_config() -> ConfigFile:
         if config_filepath.exists():
             return ConfigFile.parse_file(config_filepath)
     raise FileNotFoundError("Couldn't find a config file!")
-
 
 def k2v(
     data: List[Dict[str, Any]],
