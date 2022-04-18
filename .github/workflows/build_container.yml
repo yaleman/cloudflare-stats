@@ -1,5 +1,7 @@
 name: 'Build container'
-on: [push]
+on: 
+  push:
+    - main
 jobs:
   docker:
     runs-on: ubuntu-latest
