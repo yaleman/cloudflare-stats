@@ -21,7 +21,7 @@ url = "https://github.com/georgestarcher/Splunk-Class-httpevent/archive/refs/hea
 pylint-pydantic = "^0.1.4"
 pytest = "^7.1.2"
 mypy = "^0.960"
-types-requests = "^2.27.27"
+types-requests = "^2.27.29"
 
 [tool.poetry.scripts]
 cloudflare-analytics = "cloudflare_stats.analytics:cli"
