@@ -3,7 +3,9 @@ from datetime import datetime
 
 from typing import List, Optional
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, validator
+
+VALID_TIME_TYPES = ("hours", "days",)
 
 class ConfigFile(BaseModel):
     """ config file def """
@@ -15,6 +17,12 @@ class ConfigFile(BaseModel):
     splunk_index: str = "cloudflare"
     time_type: Optional[str]
 
+    @validator("time_type")
+    def validate_time_type(cls, value: str) -> str:
+        """validates that time_type is a valid value, should be one of hours, days"""
+        if value not in VALID_TIME_TYPES:
+            raise ValueError(f"Value needs to be one of {','.join(VALID_TIME_TYPES)}")
+        return value
 
 class CloudflareZoneMeta(BaseModel):
     """ meta field for CloudflareZone """

@@ -1,5 +1,10 @@
 """ constants """
 
+CONFIG_FILE_LOCATIONS =  [
+        "cloudflare-stats.json",
+        "/etc/cloudflare-stats.json",
+        "~/.config/cloudflare-stats.json",
+        ]
 
 DAYS_HENCE = 90
 HOURS_HENCE = 36

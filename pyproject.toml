@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "cloudflare_stats"
-version = "0.0.1"
-description = ""
+version = "0.0.2"
+description = "Modules and things to interact with Cloudflare Stats"
 authors = [
     "James Hogkinson <james@terminaloutcomes.com>",
 ]

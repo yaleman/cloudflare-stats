@@ -168,7 +168,7 @@ def cli(
         logger.debug("Parsing zone")
         zone = CloudflareZone.parse_obj(zone_info)
 
-        logger.info(zone.domain)
+        logger.info("Processing {}", zone.domain)
 
         payload={
             "sourcetype" : "cloudflare:zone",

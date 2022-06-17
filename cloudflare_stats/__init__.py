@@ -7,7 +7,9 @@ import sys
 from typing import Any, Dict, List, Optional
 
 from loguru import logger
+from .constants import CONFIG_FILE_LOCATIONS
 from .custom_types import ConfigFile
+
 
 def auth_headers(config_file: ConfigFile) -> Dict[str,str]:
     """ get the auth headers """
@@ -20,17 +22,13 @@ def load_config() -> ConfigFile:
     """ loads config """
 
     logger.debug("Loading config")
-    for test_path in [
-        "cloudflare-stats.json",
-        "/etc/cloudflare-stats.json",
-        "~/.config/cloudflare-stats.json",
-        ]:
+    for test_path in CONFIG_FILE_LOCATIONS:
         logger.debug("Checking {}", test_path)
         config_filepath = Path(test_path).expanduser().resolve()
         if config_filepath.exists():
             logger.debug("Parsing {}", config_filepath)
             return ConfigFile.parse_file(config_filepath)
-    logger.error("Couldn't find a config file!")
+    logger.error("Couldn't find a config file! Looked in: {}", ",".join(CONFIG_FILE_LOCATIONS))
     sys.exit(1)
 
 def k2v(
@@ -60,6 +58,6 @@ def setup_logging(debug_mode: bool) -> None:
     """ sets up logging """
     logger.remove()
     if debug_mode:
-        logger.add(sink=sys.stderr, level="DEBUG")
+        logger.add(sink=sys.stdout, level="DEBUG")
     else:
-        logger.add(sink=sys.stderr, level="INFO")
+        logger.add(sink=sys.stdout, level="INFO")
