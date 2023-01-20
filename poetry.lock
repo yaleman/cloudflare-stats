@@ -429,19 +429,35 @@ typing-extensions = {version = ">=3.10.0", markers = "python_version < \"3.10\""
 testutil = ["gitpython (>3)"]
 
 [[package]]
+name = "pylint-plugin-utils"
+version = "0.7"
+description = "Utilities and helpers for writing Pylint plugins"
+category = "dev"
+optional = false
+python-versions = ">=3.6.2"
+files = [
+    {file = "pylint-plugin-utils-0.7.tar.gz", hash = "sha256:ce48bc0516ae9415dd5c752c940dfe601b18fe0f48aa249f2386adfa95a004dd"},
+    {file = "pylint_plugin_utils-0.7-py3-none-any.whl", hash = "sha256:b3d43e85ab74c4f48bb46ae4ce771e39c3a20f8b3d56982ab17aa73b4f98d535"},
+]
+
+[package.dependencies]
+pylint = ">=1.7"
+
+[[package]]
 name = "pylint-pydantic"
-version = "0.1.4"
+version = "0.1.5"
 description = "A Pylint plugin to help Pylint understand the Pydantic"
 category = "dev"
 optional = false
 python-versions = ">=3.6"
 files = [
-    {file = "pylint_pydantic-0.1.4-py3-none-any.whl", hash = "sha256:d42d9e95255b2f70f82a674cec159f417263363c7da0e28998964d83d7330c72"},
+    {file = "pylint_pydantic-0.1.5-py3-none-any.whl", hash = "sha256:fcd83a5ff496c188a3f08f4b8c2254b3a859095b75f7fb7e24c33485c62384d1"},
 ]
 
 [package.dependencies]
 pydantic = "<2.0"
 pylint = ">2.0,<3.0"
+pylint-plugin-utils = "*"
 
 [[package]]
 name = "pyparsing"
@@ -697,4 +713,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.9"
-content-hash = "d0c6540597e3d4db1d83c3543e3ff72f499472dab8b89c5c52119cd42ebbce61"
+content-hash = "b28bffedec23ab4dd53e46877f4e7d84280021e7a3b56f6ac5aed76aec3f4a78"
