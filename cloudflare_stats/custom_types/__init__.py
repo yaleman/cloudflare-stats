@@ -33,9 +33,9 @@ class CloudflareZoneMeta(BaseModel):
     multiple_railguns_allowed: bool
 class CloudflareZoneOwner(BaseModel):
     """ meta field for CloudflareZone """
-    id: str
+    id: Optional[str] = None
     type: str
-    email: str
+    email: Optional[str] = None
 
 class CloudflareZoneAccount(BaseModel):
     """ meta field for CloudflareZone """

@@ -26,6 +26,12 @@ types-requests = "^2.28.11"
 [tool.poetry.scripts]
 cloudflare-analytics = "cloudflare_stats.analytics:cli"
 
+[tool.poetry.group.dev.dependencies]
+ruff = "^0.0.252"
+
+[tool.ruff]
+line-length = 200
+
 [tool.pylint.MASTER]
 max-line-length = 200
 disable = "W0511"
