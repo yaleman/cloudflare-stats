@@ -27,7 +27,7 @@ types-requests = "^2.30.0"
 cloudflare-analytics = "cloudflare_stats.analytics:cli"
 
 [tool.poetry.group.dev.dependencies]
-ruff = "^0.0.263"
+ruff = "^0.0.265"
 
 [tool.ruff]
 line-length = 200
