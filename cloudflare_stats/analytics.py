@@ -10,12 +10,21 @@ from typing import Any, Dict, Generator, List, Optional, Union
 import click
 from loguru import logger
 import requests
-from splunk_http_event_collector import http_event_collector #type:ignore
+from splunk_http_event_collector import http_event_collector  # type:ignore
+
 
 from . import k2v, setup_logging, auth_headers, load_config
-from .constants import DAYS_HENCE, DATE_FORMAT, DATETINE_FORMAT, HOURS_HENCE, QUERY_STRING
+from .constants import (
+    DAYS_HENCE,
+    DATE_FORMAT,
+    DATETINE_FORMAT,
+    HOURS_HENCE,
+    QUERY_STRING,
+)
 from .custom_types import ConfigFile, CloudflareZone
 from .custom_types.analytics import AnalyticsDayData
+
+BASE_URL = "https://api.cloudflare.com/client/v4"
 
 
 # pylint: disable=too-many-arguments
@@ -24,53 +33,62 @@ def get_analytics(
     config_file: ConfigFile,
     earliest: Optional[str] = None,
     latest: Optional[str] = None,
-    query_type: str="days",
-    time_count: Optional[int] = None
-    ) -> List[Dict[str, Any]]:
-    """ analytics query """
+    query_type: str = "days",
+    time_count: Optional[int] = None,
+) -> List[Dict[str, Any]]:
+    """analytics query"""
 
     if query_type == "days":
         if time_count is None:
-            time_count=DAYS_HENCE
+            time_count = DAYS_HENCE
         if earliest is None:
             earliest_date = datetime.utcnow() - timedelta(days=int(time_count))
             earliest = earliest_date.strftime(DATE_FORMAT)
         if latest is None:
-            latest=datetime.utcnow().strftime(DATE_FORMAT)
+            latest = datetime.utcnow().strftime(DATE_FORMAT)
         querystring = str(QUERY_STRING)
     elif query_type == "hours":
         if time_count is None:
-            time_count=HOURS_HENCE
+            time_count = HOURS_HENCE
         if earliest is None:
             earliest_date = datetime.utcnow() - timedelta(hours=int(time_count))
             earliest = earliest_date.strftime(DATETINE_FORMAT)
         if latest is None:
-            latest=datetime.utcnow().strftime(DATETINE_FORMAT)
+            latest = datetime.utcnow().strftime(DATETINE_FORMAT)
         querystring = QUERY_STRING.replace("date_", "datetime_")
         querystring = querystring.replace("timeslot: date", "timeslot: datetime")
-        querystring = querystring.replace("httpRequests1dGroups", "httpRequests1hGroups")
+        querystring = querystring.replace(
+            "httpRequests1dGroups", "httpRequests1hGroups"
+        )
     # 24 hours
     #'since': '2022-04-06T13:00:00Z',
     #'until': '2022-04-07T13:00:00Z',
 
     analytics_query = {
-        'operationName': 'GetZoneAnalytics',
-        'variables': {
-            'zoneTag': zone_id,
-            'since': earliest,
-            'until': latest,
+        "operationName": "GetZoneAnalytics",
+        "variables": {
+            "zoneTag": zone_id,
+            "since": earliest,
+            "until": latest,
         },
-        'query': querystring,
+        "query": querystring,
     }
 
     response = requests.post(
-        'https://api.cloudflare.com/client/v4/graphql',
+        f"{BASE_URL}/graphql",
         headers=auth_headers(config_file),
         json=analytics_query,
-        )
+        timeout=30,
+    )
 
     try:
-        result: List[Dict[str, Any]] = response.json()["data"]["viewer"]["zones"][0]["zones"]
+        result: List[Dict[str, Any]] = (
+            response.json()
+            .get("data", {})
+            .get("viewer", {})
+            .get("zones", [])[0]
+            .get("zones", [])
+        )
         return result
     except KeyError as key_error:
         logger.error("couldn't get zone data from analytics: {}", key_error)
@@ -78,24 +96,26 @@ def get_analytics(
         logger.error("Failed to decode JSON: {}", json_error)
     sys.exit(1)
 
+
 def get_zones(
     config_file: ConfigFile,
-    per_page: int=50,
-    page: Optional[int]=None,
-    status: str="active",
-    ) -> Generator[Dict[str,Any], None, None]:
-    """ get zone information """
-    get_zones_url = "https://api.cloudflare.com/client/v4/zones"
+    per_page: int = 50,
+    page: Optional[int] = None,
+    status: str = "active",
+) -> Generator[Dict[str, Any], None, None]:
+    """get zone information"""
+    get_zones_url = f"{BASE_URL}/zones"
     page_value = 1 if page is None else page
     params: Dict[str, Union[str, int]] = {
-        "per_page" : per_page,
-        "page" : page_value,
+        "per_page": per_page,
+        "page": page_value,
         "status": status,
     }
     response = requests.get(
         url=get_zones_url,
         headers=auth_headers(config_file),
         params=params,
+        timeout=30,
     )
     response_data = response.json()
     if "result" not in response_data:
@@ -116,25 +136,27 @@ def get_zones(
         if total_pages > page_value:
             for result in get_zones(
                 config_file=config_file,
-                page = page+1,
+                page=page + 1,
                 per_page=per_page,
                 status=status,
             ):
                 yield result
 
+
 @click.command()
 @click.option("--debug", "-d", is_flag=True, default=False)
 @click.option(
-    "--time-type", "-t",
+    "--time-type",
+    "-t",
     help="Either 'days' or 'hours', defaults to 'days'",
-    )
+)
 @click.option("--time-count", "-c", help="number of intervals (days/hours) to go back")
 def cli(
-    time_count: Optional[int]=None,
-    time_type: Optional[str]=None,
-    debug: bool=False,
-    ) -> None:
-    """ Analytics downloader for Cloudflare data """
+    time_count: Optional[int] = None,
+    time_type: Optional[str] = None,
+    debug: bool = False,
+) -> None:
+    """Analytics downloader for Cloudflare data"""
     setup_logging(debug)
     config = load_config()
 
@@ -146,9 +168,13 @@ def cli(
         else:
             time_type = "days"
 
-
-    if time_type not in ["days", "hours",]:
-        logger.error("time-type setting needs to be either days or hours, got '{}'", time_type)
+    if time_type not in [
+        "days",
+        "hours",
+    ]:
+        logger.error(
+            "time-type setting needs to be either days or hours, got '{}'", time_type
+        )
         sys.exit(1)
 
     logger.debug("Starting HEC")
@@ -157,7 +183,7 @@ def cli(
         http_event_server=config.splunk_hostname,
         http_event_port=config.splunk_hec_port,
         http_event_server_ssl=True,
-        )
+    )
     hec.input_type = "json"
     hec.index = config.splunk_index
     hec.log.setLevel(logging.DEBUG)
@@ -170,18 +196,15 @@ def cli(
 
         logger.info("Processing {}", zone.domain)
 
-        payload={
-            "sourcetype" : "cloudflare:zone",
-            "event" : zone.dict()
-        }
+        payload = {"sourcetype": "cloudflare:zone", "event": zone.dict()}
         hec.batchEvent(payload)
 
         zone_analytics = get_analytics(
-                    zone_id=zone.id,
-                    config_file=config,
-                    query_type=time_type,
-                    time_count=time_count,
-                    )
+            zone_id=zone.id,
+            config_file=config,
+            query_type=time_type,
+            time_count=time_count,
+        )
 
         for data_raw in zone_analytics:
             logger.debug("Parsing day: {}", data_raw["dimensions"]["timeslot"])
@@ -201,10 +224,7 @@ def cli(
                 data_raw["timeslot"] = f"{data_raw['dimensions']['timeslot']}T00:00:00Z"
             else:
                 data_raw["timeslot"] = data_raw["dimensions"]["timeslot"]
-            eventtime = datetime.strptime(
-                data_raw["timeslot"],
-                "%Y-%m-%dT%H:%M:%S%z"
-            )
+            eventtime = datetime.strptime(data_raw["timeslot"], "%Y-%m-%dT%H:%M:%S%z")
 
             # clean out re-mapped fields
             del data_raw["dimensions"]
@@ -215,22 +235,23 @@ def cli(
                 "Successfully parsed {} {}",
                 zone.domain,
                 timeslot_data.dict()["timeslot"],
-                )
+            )
             timeslot_data.zone_id = zone.id
             timeslot_data.domain = zone.domain
             payload = {
-                "sourcetype" : "cloudflare:analytics",
-                "event" : timeslot_data.dict(exclude_none=True, exclude_unset=True),
+                "sourcetype": "cloudflare:analytics",
+                "event": timeslot_data.dict(exclude_none=True, exclude_unset=True),
             }
             logger.debug(json.dumps(payload, indent=4, default=str))
 
             hec.batchEvent(
                 payload,
                 eventtime=eventtime.timestamp(),
-                )
+            )
             hec.flushBatch()
 
     hec.flushBatch()
+
 
 if __name__ == "__main__":
     cli()

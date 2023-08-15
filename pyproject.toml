@@ -2,13 +2,11 @@
 name = "cloudflare_stats"
 version = "0.0.2"
 description = "Modules and things to interact with Cloudflare Stats"
-authors = [
-    "James Hogkinson <james@terminaloutcomes.com>",
-]
+authors = ["James Hogkinson <james@terminaloutcomes.com>"]
 license = "MIT"
 
 [tool.poetry.dependencies]
-python = "^3.9"
+python = "^3.10"
 requests = "^2.31.0"
 pydantic = "^2.1.1"
 loguru = "^0.7.0"
@@ -39,9 +37,7 @@ extension-pkg-whitelist = "pydantic"
 load-plugins = "pylint_pydantic"
 
 [build-system]
-requires = [
-    "poetry-core>=1.0.0",
-]
+requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
 
 [project]
@@ -49,6 +45,4 @@ name = "cloudflare_stats"
 description = ""
 license = "MIT"
 version = "0.0.1"
-authors = [
-    { name = "James Hogkinson", email = "james@terminaloutcomes.com" },
-]
+authors = [{ name = "James Hogkinson", email = "james@terminaloutcomes.com" }]
