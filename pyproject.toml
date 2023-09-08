@@ -9,7 +9,7 @@ license = "MIT"
 python = "^3.10"
 requests = "^2.31.0"
 pydantic = "^2.3.0"
-loguru = "^0.7.0"
+loguru = "^0.7.1"
 click = "^8.1.7"
 
 [tool.poetry.dependencies.splunk-hec]
