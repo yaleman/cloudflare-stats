@@ -18,7 +18,7 @@ url = "https://github.com/georgestarcher/Splunk-Class-httpevent/archive/refs/hea
 [tool.poetry.dev-dependencies]
 pylint-pydantic = "^0.3.0"
 pytest = "^7.4.2"
-mypy = "^1.5"
+mypy = "^1.6"
 types-requests = "^2.31.0"
 
 [tool.poetry.scripts]
