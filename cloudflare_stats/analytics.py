@@ -230,7 +230,7 @@ def cli(
             del data_raw["dimensions"]
             del data_raw["sum"]
 
-            timeslot_data = AnalyticsDayData.parse_obj(data_raw)
+            timeslot_data = AnalyticsDayData.model_validate(data_raw)
             logger.debug(
                 "Successfully parsed {} {}",
                 zone.domain,
@@ -240,7 +240,7 @@ def cli(
             timeslot_data.domain = zone.domain
             payload = {
                 "sourcetype": "cloudflare:analytics",
-                "event": timeslot_data.dict(exclude_none=True, exclude_unset=True),
+                "event": timeslot_data.model_dump(exclude_none=True, exclude_unset=True),
             }
             logger.debug(json.dumps(payload, indent=4, default=str))
 
