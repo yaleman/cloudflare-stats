@@ -10,7 +10,7 @@ python = "^3.10"
 requests = "^2.32.3"
 pydantic = "^2.10.4"
 loguru = "^0.7.3"
-click = "^8.1.7"
+click = "^8.1.8"
 
 [tool.poetry.dependencies.splunk-hec]
 url = "https://github.com/georgestarcher/Splunk-Class-httpevent/archive/refs/heads/master.tar.gz"
