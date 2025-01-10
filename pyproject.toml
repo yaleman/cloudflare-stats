@@ -16,7 +16,7 @@ click = "^8.1.8"
 url = "https://github.com/georgestarcher/Splunk-Class-httpevent/archive/refs/heads/master.tar.gz"
 
 [tool.poetry.dev-dependencies]
-pylint-pydantic = "^0.3.4"
+pylint-pydantic = "^0.3.5"
 pytest = "^8.3.4"
 mypy = "^1.14"
 types-requests = "^2.32.0"
