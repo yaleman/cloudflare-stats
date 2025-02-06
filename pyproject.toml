@@ -1,31 +1,27 @@
-[tool.poetry]
-name = "cloudflare_stats"
+[project]
+name = "cloudflare-stats"
 version = "0.0.2"
 description = "Modules and things to interact with Cloudflare Stats"
-authors = ["James Hogkinson <james@terminaloutcomes.com>"]
-license = "MIT"
+authors = [{ name = "James Hogkinson", email = "james@terminaloutcomes.com" }]
+requires-python = ">=3.10"
+dependencies = [
+    "click>=8.1.8",
+    "loguru>=0.7.3",
+    "pydantic>=2.10.6",
+    "requests>=2.32.3",
+    "splunk-hec>=1.11",
+]
 
-[tool.poetry.dependencies]
-python = "^3.10"
-requests = "^2.32.3"
-pydantic = "^2.10.6"
-loguru = "^0.7.3"
-click = "^8.1.8"
-
-[tool.poetry.dependencies.splunk-hec]
-url = "https://github.com/georgestarcher/Splunk-Class-httpevent/archive/refs/heads/master.tar.gz"
-
-[tool.poetry.dev-dependencies]
-pylint-pydantic = "^0.3.5"
-pytest = "^8.3.4"
-mypy = "^1.14"
-types-requests = "^2.32.0"
-
-[tool.poetry.scripts]
+[project.scripts]
 cloudflare-analytics = "cloudflare_stats.analytics:cli"
 
-[tool.poetry.group.dev.dependencies]
-ruff = "^0.9.4"
+[dependency-groups]
+dev = [
+    "mypy>=1.15.0",
+    "pytest>=8.3.4",
+    "ruff>=0.9.4",
+    "types-requests>=2.32.0.20241016",
+]
 
 [tool.ruff]
 line-length = 200
@@ -36,13 +32,10 @@ disable = "W0511"
 extension-pkg-whitelist = "pydantic"
 load-plugins = "pylint_pydantic"
 
-[build-system]
-requires = ["poetry-core>=1.0.0"]
-build-backend = "poetry.core.masonry.api"
+[tool.uv.sources]
+splunk-hec = { git = "https://github.com/georgestarcher/Splunk-Class-httpevent", rev = "8882db8" }
 
-[project]
-name = "cloudflare_stats"
-description = ""
-license = "MIT"
-version = "0.0.1"
-authors = [{ name = "James Hogkinson", email = "james@terminaloutcomes.com" }]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"

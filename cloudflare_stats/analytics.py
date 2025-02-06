@@ -1,6 +1,5 @@
 """ analytics thing """
 
-# TODO: can we pydantic errors when it finds extra fields?
 from datetime import datetime, timedelta
 import json
 import logging
