@@ -6,7 +6,9 @@ This pulls information from CloudFlare and shoves it into my Splunk instance.
 
 Install this library using `pip`:
 
-    $ python -m pip install git+https://github.com/yaleman/cloudflare-stats
+```shell
+python -m pip install git+https://github.com/yaleman/cloudflare-stats
+```
 
 ## Usage
 
@@ -16,7 +18,7 @@ Copy `cloudflare-stats.example.json` to `cloudflare-stats.json` and put in your 
 
 Running this in docker:
 
-```shell
+```bash
 docker run --rm -it \
     -v "$HOME/.config/cloudflare-stats.json:/etc/cloudflare-stats.json" \
     ghcr.io/yaleman/cloudflare-stats:latest
@@ -26,6 +28,6 @@ docker run --rm -it \
 
 To contribute to this library, first checkout the code. Then create a new virtual environment:
 
-    poetry install
-    poetry shell
-    cloudflare-analytics
+```bash
+uv sync
+```
