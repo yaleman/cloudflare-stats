@@ -9,8 +9,13 @@ dependencies = [
     "loguru>=0.7.3",
     "pydantic>=2.10.6",
     "requests>=2.32.3",
-    "splunk-hec>=1.11",
+    "splunk-hec>=1.81",
 ]
+
+
+[tool.uv.sources]
+splunk-hec = { git = "https://github.com/georgestarcher/Splunk-Class-httpevent", rev = "8882db8" }
+
 
 [project.scripts]
 cloudflare-analytics = "cloudflare_stats.analytics:cli"
@@ -31,10 +36,6 @@ max-line-length = 200
 disable = "W0511"
 extension-pkg-whitelist = "pydantic"
 load-plugins = "pylint_pydantic"
-
-[tool.uv.sources]
-splunk-hec = { git = "https://github.com/georgestarcher/Splunk-Class-httpevent", rev = "8882db8" }
-
 
 [build-system]
 requires = ["hatchling"]
