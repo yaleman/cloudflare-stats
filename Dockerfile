@@ -12,5 +12,7 @@ COPY cloudflare_stats cloudflare_stats/
 
 RUN python -m pip install .
 
+USER nobody
+
 #Run the command
-CMD [ "cloudflare-analytics"]
+CMD [ "cloudflare-analytics" ]
