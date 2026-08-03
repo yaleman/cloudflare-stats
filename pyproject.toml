@@ -2,7 +2,9 @@
 name = "cloudflare-stats"
 version = "0.0.2"
 description = "Modules and things to interact with Cloudflare Stats"
-authors = [{ name = "James Hogkinson", email = "james@terminaloutcomes.com" }]
+authors = [
+    { name = "James Hogkinson", email = "james@terminaloutcomes.com" },
+]
 requires-python = ">=3.10"
 dependencies = [
     "click>=8.1.8",
@@ -11,22 +13,14 @@ dependencies = [
     "requests>=2.32.3",
     "splunk-hec>=1.81",
 ]
-
-
-[tool.uv.sources]
-splunk-hec = { git = "https://github.com/georgestarcher/Splunk-Class-httpevent", rev = "8882db8" }
-
+readme = "README.md"
 
 [project.scripts]
 cloudflare-analytics = "cloudflare_stats.analytics:cli"
 
-[dependency-groups]
-dev = [
-    "mypy>=1.15.0",
-    "pytest>=9.0.3",
-    "ruff>=0.9.4",
-    "types-requests>=2.32.0.20241016",
-]
+[tool.uv.sources.splunk-hec]
+git = "https://github.com/georgestarcher/Splunk-Class-httpevent"
+rev = "8882db8"
 
 [tool.ruff]
 line-length = 200
@@ -37,6 +31,16 @@ disable = "W0511"
 extension-pkg-whitelist = "pydantic"
 load-plugins = "pylint_pydantic"
 
+[dependency-groups]
+dev = [
+    "mypy>=1.15.0",
+    "pytest>=9.0.3",
+    "ruff>=0.9.4",
+    "types-requests>=2.32.0.20241016",
+]
+
 [build-system]
-requires = ["hatchling"]
+requires = [
+    "hatchling",
+]
 build-backend = "hatchling.build"
